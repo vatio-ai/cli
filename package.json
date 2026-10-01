@@ -1,0 +1,39 @@
+{
+  "name": "@vatio-ai/cli",
+  "version": "0.54.1",
+  "description": "Vatio CLI — deploy and manage Vatio agent workspaces",
+  "keywords": [
+    "vatio",
+    "agent",
+    "ai",
+    "cli",
+    "deploy"
+  ],
+  "homepage": "https://vatio.ai",
+  "bugs": "https://github.com/vatio-ai/cli/issues",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "author": "Vatio",
+  "type": "module",
+  "bin": {
+    "vatio": "bin/vatio.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "README.md",
+    "LICENSE.txt"
+  ],
+  "dependencies": {
+    "yaml": "^2.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vatio-ai/cli"
+  }
+}
