@@ -24,6 +24,7 @@ import { chat } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, issue } from "../lib/commands/support-commands.mjs";
+import { evalCommand, flags } from "../lib/commands/improve.mjs";
 import { mcp } from "../lib/commands/mcp.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 
@@ -93,6 +94,10 @@ async function run(command, args) {
       return await whatsapp(config, args);
     case "instagram":
       return await instagram(config, args);
+    case "flags":
+      return await flags(config, args);
+    case "eval":
+      return await evalCommand(config, args);
     case "docs":
       return await docs(config, args);
     case "issue":
