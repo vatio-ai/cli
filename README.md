@@ -19,13 +19,11 @@ is the same thing without installing anything.
 ## If you are a coding agent
 
 ```bash
-vatio mcp     # MCP over stdio
-vatio docs    # the whole developer contract as markdown, live from Vatio
+vatio docs --save   # the whole developer contract as markdown, live from Vatio
 ```
 
-`vatio mcp` is the short path: it hands you the contract and the deploy commands
-over MCP, with no browser step. Failing that, `vatio docs` prints the same
-contract that [docs.vatio.ai/docs.md](https://docs.vatio.ai/docs.md) serves, and
+`vatio docs` prints the same contract that
+[docs.vatio.ai/docs.md](https://docs.vatio.ai/docs.md) serves, and
 `vatio docs --save` writes it next to the workspace.
 
 Don't guess `vatio.yml` keys. Unknown root keys fail validation, and the rules
@@ -60,27 +58,22 @@ publish [--env NAME]        Promote the latest push to live, or the named previe
 diff [--env NAME]           What this directory would change
 status                      Preview and live deployment state
 rollback                    Restore the previous live deployment
-tools check                 Validate the workspace against Vatio's contracts
 
-chat "message" [--env NAME] Talk to your own agent; the token is the identity
-chat transcript|debug|reset|destroy
-chat show CHAT_ID [--json]  Any chat in the workspace, with its deployment and tool calls
+chat "message" [--env NAME] [--new]
+                            Talk to your own agent; the token is the identity
+chat show [CHAT_ID] [--json]
+                            The chat you are in, or any chat in the workspace, with its tool calls
 
 kb list|show|create|rm       Knowledge bases
 kb write|cat|rm-entry        Entries, from a file or stdin
-kb follow|unfollow|refresh   Read a site into a base, nightly
 
 secrets list|set|rm          Credentials your tools read
 tokens list|create|origins|revoke  Publishable tokens and the origins each accepts
-widget [--env NAME]          What the platform enforces, and the tokens there are
 auth --new-key               Keypair that signs the visitor's JWT
 
-whatsapp ...                 Shared preview number, or your own business number
-instagram ...                Shared sandbox, or your own account
+whatsapp | instagram         Set up in the console; prints the link
 
 docs [--save [PATH]]         The whole developer contract
-mcp                          Speak MCP over stdio, for a coding agent
-issue "what should change"   Send a change request, workspace attached
 config show|set|unset        base_url and token, per developer
 ```
 
@@ -99,14 +92,13 @@ command, which is what CI should use.
 ## Where the rules live
 
 Whether a workspace is valid is answered by Vatio, not by this package: `push`
-and `tools check` send the directory and read the result back. So the rules that
+and `diff` send the directory and read the result back. So the rules that
 judge your workspace are always the deployed ones, and this CLI never has to be
 upgraded to understand a new one.
 
 ## Issues
 
-Bugs and questions go to [issues](https://github.com/vatio-ai/cli/issues), or
-`vatio issue` from inside a workspace. This repository is a read-only mirror of
+Bugs and questions go to [issues](https://github.com/vatio-ai/cli/issues). This repository is a read-only mirror of
 the CLI as it ships inside Vatio, so a pull request cannot be merged here: open
 an issue describing the change instead. Release notes live in the
 [changelog](https://docs.vatio.ai/changelog).

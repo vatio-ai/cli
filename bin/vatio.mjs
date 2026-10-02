@@ -1,14 +1,8 @@
 #!/usr/bin/env node
 // The Vatio CLI, as an npm package: `npx @vatio-ai/cli push`.
 //
-// Same platform, same API, same ~/.vatio/config.json as the Ruby CLI that
-// `curl … /install.sh | bash` puts on a machine. Either can drive a workspace,
-// and a developer who logged in with one is logged in for the other -- the
-// credential belongs to their home directory, not to a client.
-//
-// This exists because Node is the runtime this audience already has and Ruby
-// is the one some of them do not. Nothing about the contract moved: the
-// workspace is parsed by the platform, so a client is HTTP and a terminal.
+// The workspace is parsed by the platform, so a client is HTTP and a
+// terminal; the credential lives in ~/.vatio/config.json.
 
 import { Config, ConfigError } from "../lib/config.mjs";
 import { HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
@@ -16,24 +10,30 @@ import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
 import { login, logout } from "../lib/commands/auth.mjs";
 import { configCommand, doctor, init, version } from "../lib/commands/misc.mjs";
-import { diff, publish, push, rollback, status, toolsCheck } from "../lib/commands/deploy.mjs";
+import { diff, publish, push, rollback, status } from "../lib/commands/deploy.mjs";
 import { env } from "../lib/commands/env.mjs";
-import { secrets, tokens, widget } from "../lib/commands/workspace-admin.mjs";
+import { secrets, tokens } from "../lib/commands/workspace-admin.mjs";
 import { auth } from "../lib/commands/identity-key.mjs";
 import { chat } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
-import { docs, issue } from "../lib/commands/support-commands.mjs";
+import { docs } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags } from "../lib/commands/improve.mjs";
-import { mcp } from "../lib/commands/mcp.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 
-// Two commands that existed and are gone, answered by name rather than as
-// unknown: one was removed from the product, the other is what npm does.
+// Commands that existed and are gone, answered by name rather than as
+// unknown: removed from the product, or what npm does now.
 const RETIRED = {
   pull: "was removed: a deployed manifest only ever comes from a push, so it could never\n" +
     "hand back anything your repository did not already have. Use `vatio diff --env live`,\n" +
-    "or read the manifest at GET /api/v1/:slug/deploy/manifest.",
+    "or read the manifest at GET /api/developer/v1/:slug/manifest.",
+  issue: "was removed: report a problem on the public repository it belongs to --\n" +
+    "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
+  tools: "was removed: `vatio push` validates before it deploys, and `vatio diff` validates\n" +
+    "without deploying.",
+  widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited on\n" +
+    "the console's Widget page.",
+  mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
   update: "is npm's job now: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
     "`npm install -g @vatio-ai/cli@latest` updates a global install."
 };
@@ -76,12 +76,8 @@ async function run(command, args) {
       return await env(config, args);
     case "diff":
       return await diff(config, args);
-    case "tools":
-      return await toolsCheck(config, args);
     case "tokens":
       return await tokens(config, args);
-    case "widget":
-      return await widget(config, args);
     case "auth":
       return await auth(config, args);
     case "chat":
@@ -100,10 +96,6 @@ async function run(command, args) {
       return await evalCommand(config, args);
     case "docs":
       return await docs(config, args);
-    case "issue":
-      return await issue(config, args);
-    case "mcp":
-      return await mcp(config);
     case "help":
     case "-h":
     case "--help":

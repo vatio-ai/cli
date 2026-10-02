@@ -61,7 +61,7 @@ const NOT_COMMANDS = new Set(["--version", "-v", "-h", "--help", "help", "undefi
 
 // Commands the product removed. They must appear in none of the three places
 // except the dispatch arm that explains the removal.
-const RETIRED = new Set(["pull", "update"]);
+const RETIRED = new Set(["pull", "update", "issue", "tools", "widget", "mcp"]);
 
 const problems = [];
 
@@ -104,7 +104,7 @@ if (problems.length > 0) {
   for (const problem of problems) console.error(`  ${problem}`);
   console.error(
     "\nEvery command lives in three places: the dispatch in cli/bin/vatio.mjs, the\n" +
-      "help in cli/lib/help.mjs, and the table in docs/src/cli/commands.md. Add or\n" +
+      "help in cli/lib/help.mjs, and the command tables under docs/src/cli/. Add or\n" +
       "remove it in all three in the same commit."
   );
   process.exit(1);
