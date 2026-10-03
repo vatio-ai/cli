@@ -16,6 +16,7 @@ import { secrets, tokens } from "../lib/commands/workspace-admin.mjs";
 import { auth } from "../lib/commands/identity-key.mjs";
 import { chat } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
+import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags } from "../lib/commands/improve.mjs";
@@ -84,6 +85,8 @@ async function run(command, args) {
       return await chat(config, args);
     case "kb":
       return await kb(config, args);
+    case "business":
+      return await business(config, args);
     case "secrets":
       return await secrets(config, args);
     case "whatsapp":
