@@ -18,9 +18,10 @@ import { chat } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
-import { docs } from "../lib/commands/support-commands.mjs";
+import { docs, feedback } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags } from "../lib/commands/improve.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
+import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
 
 // Commands that existed and are gone, answered by name rather than as
 // unknown: removed from the product, or what npm does now.
@@ -39,16 +40,19 @@ const RETIRED = {
     "`npm install -g @vatio-ai/cli@latest` updates a global install."
 };
 
+const config = new Config({ startDir: process.cwd() });
+
 async function main(argv) {
   const args = argv.slice(2);
   const command = args.shift();
+  beginRun(command, args);
   const updateCheck = startUpdateCheck(command);
   await run(command, args);
+  await reportRun(config, { exitCode: process.exitCode ?? 0 });
   await printUpdateNotice(updateCheck);
 }
 
 async function run(command, args) {
-  const config = new Config({ startDir: process.cwd() });
 
   switch (command) {
     case "version":
@@ -99,6 +103,8 @@ async function run(command, args) {
       return await evalCommand(config, args);
     case "docs":
       return await docs(config, args);
+    case "feedback":
+      return await feedback(config, args);
     case "help":
     case "-h":
     case "--help":
@@ -111,35 +117,58 @@ async function run(command, args) {
 }
 
 
-main(process.argv).catch((error) => {
+main(process.argv).catch(async (error) => {
+  printError(error);
+  await reportRun(config, { exitCode: 1, error });
+  process.exit(1);
+});
+
+function printError(error) {
   if (error instanceof UserError || error instanceof ConfigError) {
     console.error(error.message);
-    process.exit(1);
+    return suggestFeedback();
   }
   if (error instanceof UnauthorizedError) {
     console.error("Authentication failed (401). Run `vatio login`.");
-    if (error.requestId) console.error(`request_id=${error.requestId}`);
-    process.exit(1);
+    return printTrailer(error);
   }
   if (error instanceof ForbiddenError) {
     console.error("Access denied (403). Your token cannot access this workspace.");
-    if (error.requestId) console.error(`request_id=${error.requestId}`);
-    process.exit(1);
+    return printTrailer(error);
   }
   if (error instanceof NotFoundError) {
     console.error(
       "Remote resource not found (404). Check the workspace slug; `vatio push` creates a missing remote automatically."
     );
-    if (error.requestId) console.error(`request_id=${error.requestId}`);
-    process.exit(1);
+    return printTrailer(error);
   }
   if (error instanceof HttpError) {
     console.error(error.message);
-    if (error.requestId) console.error(`request_id=${error.requestId}`);
-    process.exit(1);
+    return printTrailer(error);
   }
   // Anything left is a bug in this CLI rather than something the developer
   // did, so it keeps its stack: that is what makes it reportable.
   console.error(error?.stack ?? String(error));
-  process.exit(1);
-});
+  suggestFeedback();
+}
+
+// What the platform said to do next, and the ids that find this request in
+// its logs.
+function printTrailer(error) {
+  const hint = error.body?.hint;
+  if (hint && !(error instanceof UnauthorizedError)) console.error(`Next: ${hint}`);
+
+  const code = error.body?.error_key ?? (typeof error.body?.error === "string" ? error.body.error : error.body?.error?.code);
+  const ids = [code && `error=${code}`, error.requestId && `request_id=${error.requestId}`].filter(Boolean);
+  if (ids.length > 0) console.error(ids.join(" "));
+  suggestFeedback();
+}
+
+// Said to coding agents only: a person at a terminal has better ways to
+// complain, and does not need the line on every typo.
+function suggestFeedback() {
+  if (!telemetryEnabled() || !isCodingAgent() || process.argv[2] === "feedback") return;
+  console.error(
+    '\nIf this has you stuck, tell the Vatio team: vatio feedback "what you were trying to do and what got in the way"'
+  );
+}
