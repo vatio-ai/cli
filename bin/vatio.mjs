@@ -12,7 +12,8 @@ import { login, logout } from "../lib/commands/auth.mjs";
 import { configCommand, doctor, init, version } from "../lib/commands/misc.mjs";
 import { diff, publish, push, rollback, status } from "../lib/commands/deploy.mjs";
 import { env } from "../lib/commands/env.mjs";
-import { secrets, tokens } from "../lib/commands/workspace-admin.mjs";
+import { keys, secrets, tokens } from "../lib/commands/workspace-admin.mjs";
+import { templates, webhooks } from "../lib/commands/webhooks.mjs";
 import { auth } from "../lib/commands/identity-key.mjs";
 import { chat } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
@@ -83,6 +84,12 @@ async function run(command, args) {
       return await diff(config, args);
     case "tokens":
       return await tokens(config, args);
+    case "keys":
+      return await keys(config, args);
+    case "templates":
+      return await templates(config, args);
+    case "webhooks":
+      return await webhooks(config, args);
     case "auth":
       return await auth(config, args);
     case "chat":
