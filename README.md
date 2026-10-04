@@ -70,6 +70,7 @@ kb write|cat|rm-entry        Entries, from a file or stdin
 secrets list|set|rm          Credentials your tools read
 tokens list|create|origins|revoke  Publishable tokens and the origins each accepts
 auth --new-key               Keypair that signs the visitor's JWT
+auth --supabase [URL]        Your users sign in with Supabase: no keys, no code
 
 whatsapp | instagram         Set up in the console; prints the link
 
