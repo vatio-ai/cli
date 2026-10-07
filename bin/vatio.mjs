@@ -21,6 +21,7 @@ import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags } from "../lib/commands/improve.mjs";
+import { propose } from "../lib/commands/propose.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
 
@@ -108,6 +109,8 @@ async function run(command, args) {
       return await flags(config, args);
     case "eval":
       return await evalCommand(config, args);
+    case "propose":
+      return await propose(config, args);
     case "docs":
       return await docs(config, args);
     case "feedback":
