@@ -23,7 +23,7 @@ vatio docs --save   # the whole developer contract as markdown, live from Vatio
 ```
 
 `vatio docs` prints the same contract that
-[docs.vatio.ai/docs.md](https://docs.vatio.ai/docs.md) serves, and
+[vatio.ai/docs/docs.md](https://vatio.ai/docs/docs.md) serves, and
 `vatio docs --save` writes it next to the workspace.
 
 Don't guess `vatio.yml` keys. Unknown root keys fail validation, and the rules
@@ -82,7 +82,7 @@ config show|set|unset        base_url and token, per developer
 `pr-42`.
 
 Run `npx @vatio-ai/cli help` for the whole surface, and see
-[docs.vatio.ai](https://docs.vatio.ai) for the platform.
+[vatio.ai/docs](https://vatio.ai/docs) for the platform.
 
 ## Where your credentials live
 
@@ -102,4 +102,4 @@ upgraded to understand a new one.
 Bugs and questions go to [issues](https://github.com/vatio-ai/cli/issues). This repository is a read-only mirror of
 the CLI as it ships inside Vatio, so a pull request cannot be merged here: open
 an issue describing the change instead. Release notes live in the
-[changelog](https://docs.vatio.ai/changelog).
+[changelog](https://vatio.ai/docs/changelog).
