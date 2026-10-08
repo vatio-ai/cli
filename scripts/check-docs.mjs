@@ -22,8 +22,8 @@ const repoRoot = join(packageRoot, "..");
 const BIN = join(packageRoot, "bin", "vatio.mjs");
 const HELP = join(packageRoot, "lib", "help.mjs");
 
-// The docs are vatio.ai/docs now: a VitePress site whose sources are one
-// Markdown file per page under docs/src. They are read here straight off disk,
+// The docs are vatio.ai/docs, built by site/ from one Markdown file per page
+// under docs/src. They are read here straight off disk,
 // not from the built site, so this still runs on a bare checkout with no Ruby,
 // no Node build and no network -- which is what lets cli-publish.yml run it.
 //
