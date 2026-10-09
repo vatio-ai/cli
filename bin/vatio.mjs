@@ -19,7 +19,7 @@ import { chat } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
-import { docs, feedback } from "../lib/commands/support-commands.mjs";
+import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags, tools } from "../lib/commands/improve.mjs";
 import { propose } from "../lib/commands/propose.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
@@ -115,6 +115,8 @@ async function run(command, args) {
       return await docs(config, args);
     case "feedback":
       return await feedback(config, args);
+    case "share-session":
+      return await shareSession(config, args);
     case "help":
     case "-h":
     case "--help":
@@ -177,7 +179,7 @@ function printTrailer(error) {
 // Said to coding agents only: a person at a terminal has better ways to
 // complain, and does not need the line on every typo.
 function suggestFeedback() {
-  if (!telemetryEnabled() || !isCodingAgent() || process.argv[2] === "feedback") return;
+  if (!telemetryEnabled() || !isCodingAgent() || ["feedback", "share-session"].includes(process.argv[2])) return;
   console.error(
     '\nIf this has you stuck, tell the Vatio team: vatio feedback "what you were trying to do and what got in the way"'
   );
