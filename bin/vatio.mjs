@@ -20,7 +20,7 @@ import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback } from "../lib/commands/support-commands.mjs";
-import { evalCommand, flags } from "../lib/commands/improve.mjs";
+import { evalCommand, flags, tools } from "../lib/commands/improve.mjs";
 import { propose } from "../lib/commands/propose.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
@@ -33,8 +33,6 @@ const RETIRED = {
     "or read the manifest at GET /api/developer/v1/:slug/manifest.",
   issue: "was removed: report a problem on the public repository it belongs to --\n" +
     "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
-  tools: "was removed: `vatio push` validates before it deploys, and `vatio diff` validates\n" +
-    "without deploying.",
   widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited on\n" +
     "the console's Widget page.",
   mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
@@ -109,6 +107,8 @@ async function run(command, args) {
       return await flags(config, args);
     case "eval":
       return await evalCommand(config, args);
+    case "tools":
+      return await tools(config, args);
     case "propose":
       return await propose(config, args);
     case "docs":

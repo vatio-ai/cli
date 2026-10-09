@@ -61,7 +61,7 @@ const NOT_COMMANDS = new Set(["--version", "-v", "-h", "--help", "help", "undefi
 
 // Commands the product removed. They must appear in none of the three places
 // except the dispatch arm that explains the removal.
-const RETIRED = new Set(["pull", "update", "issue", "tools", "widget", "mcp"]);
+const RETIRED = new Set(["pull", "update", "issue", "widget", "mcp"]);
 
 const problems = [];
 
