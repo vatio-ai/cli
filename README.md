@@ -53,8 +53,8 @@ init [SLUG]                 Create vatio.yml here, and the remote to match
 login | logout              Authorize this machine in a browser, or revoke and forget it
 doctor                      Node, config, workspace and token status
 
-push [--env NAME]           Validate the workspace, then update a preview
-publish [--env NAME]        Promote the latest push to live, or the named preview
+push                        Validate the workspace, then update preview
+publish                     Take preview live, once `vatio eval` has tested it
 diff [--env NAME]           What this directory would change
 status                      Preview and live deployment state
 rollback                    Restore the previous live deployment
@@ -63,6 +63,10 @@ chat "message" [--env NAME] [--new]
                             Talk to your own agent; the token is the identity
 chat show [CHAT_ID] [--json]
                             The chat you are in, or any chat in the workspace, with its tool calls
+
+flags                       Every open report from the inbox, for your coding agent to fix
+eval                        Test every report against preview; exits 1 if one fails
+tools [--env NAME]          How each tool's backend has been answering
 
 kb list|show|create|rm       Knowledge bases
 kb write|cat|rm-entry        Entries, from a file or stdin
@@ -78,8 +82,8 @@ docs [--save [PATH]]         The whole developer contract
 config show|set|unset        base_url and token, per developer
 ```
 
-`--env NAME` targets a deployment: `live`, `preview`, or a named preview like
-`pr-42`.
+`--env NAME` targets an environment: `preview`, the next version, or `live`,
+what visitors talk to.
 
 Run `npx @vatio-ai/cli help` for the whole surface, and see
 [vatio.ai/docs](https://vatio.ai/docs) for the platform.

@@ -21,7 +21,6 @@ import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags, tools } from "../lib/commands/improve.mjs";
-import { propose } from "../lib/commands/propose.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
 
@@ -37,7 +36,8 @@ const RETIRED = {
     "the console's Widget page.",
   mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
   update: "is npm's job now: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
-    "`npm install -g @vatio-ai/cli@latest` updates a global install."
+    "`npm install -g @vatio-ai/cli@latest` updates a global install.",
+  propose: "was removed in 0.71.0. Test with `vatio eval` and publish with `vatio publish`."
 };
 
 const config = new Config({ startDir: process.cwd() });
@@ -109,8 +109,6 @@ async function run(command, args) {
       return await evalCommand(config, args);
     case "tools":
       return await tools(config, args);
-    case "propose":
-      return await propose(config, args);
     case "docs":
       return await docs(config, args);
     case "feedback":
