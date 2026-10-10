@@ -50,7 +50,7 @@ is no `--workspace` flag.
 
 ```
 init [SLUG]                 Create vatio.yml here, and the remote to match
-login | logout              Authorize this machine in a browser, or forget it
+login | logout              Authorize this machine in a browser, or revoke and forget it
 doctor                      Node, config, workspace and token status
 
 push [--env NAME]           Validate the workspace, then update a preview

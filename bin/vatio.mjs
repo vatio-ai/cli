@@ -64,7 +64,7 @@ async function run(command, args) {
     case "login":
       return await login(config, args);
     case "logout":
-      return logout(config);
+      return await logout(config);
     case "config":
       return configCommand(config, args);
     case "init":
