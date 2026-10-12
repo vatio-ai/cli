@@ -33,8 +33,8 @@ const RETIRED = {
     "or read the manifest at GET /api/developer/v1/:slug/manifest.",
   issue: "was removed: report a problem on the public repository it belongs to --\n" +
     "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
-  widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited on\n" +
-    "the console's Widget page.",
+  widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited in\n" +
+    "the inbox, under Channels → Widget.",
   mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
   update: "is npm's job now: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
     "`npm install -g @vatio-ai/cli@latest` updates a global install.",

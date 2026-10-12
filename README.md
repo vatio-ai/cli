@@ -76,7 +76,7 @@ tokens list|create|origins|revoke  Publishable tokens and the origins each accep
 auth --new-key               Keypair that signs the visitor's JWT
 auth --supabase [URL]        Your users sign in with Supabase: no keys, no code
 
-whatsapp | instagram         Set up in the console; prints the link
+whatsapp | instagram         Set up in the inbox; prints the link
 
 docs [--save [PATH]]         The whole developer contract
 config show|set|unset        base_url and token, per developer
