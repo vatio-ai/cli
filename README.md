@@ -54,7 +54,7 @@ login | logout              Authorize this machine in a browser, or revoke and f
 doctor                      Node, config, workspace and token status
 
 push                        Validate the workspace, then update preview
-publish                     Take preview live, once `vatio eval` has tested it
+publish                     Take preview live, once `vatio test` has tested it
 diff [--env NAME]           What this directory would change
 status                      Preview and live deployment state
 rollback                    Restore the previous live deployment
@@ -65,7 +65,8 @@ chat show [CHAT_ID] [--json]
                             The chat you are in, or any chat in the workspace, with its tool calls
 
 flags                       Every open report from the inbox, for your coding agent to fix
-eval                        Test every report against preview; exits 1 if one fails
+test                        Test every report against preview, in the background
+test --wait                 Wait for the report; exits 1 if a case fails
 tools [--env NAME]          How each tool's backend has been answering
 
 kb list|show|create|rm       Knowledge bases

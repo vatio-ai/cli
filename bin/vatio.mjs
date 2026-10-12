@@ -16,12 +16,12 @@ import { keys, secrets, tokens } from "../lib/commands/workspace-admin.mjs";
 import { templates, webhooks } from "../lib/commands/webhooks.mjs";
 import { routines } from "../lib/commands/routines.mjs";
 import { auth } from "../lib/commands/identity-key.mjs";
-import { chat } from "../lib/commands/chat.mjs";
+import { chat, chatHelp } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
-import { evalCommand, flags, tools } from "../lib/commands/improve.mjs";
+import { evalCommand, flags, test, tools } from "../lib/commands/improve.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
 
@@ -38,7 +38,7 @@ const RETIRED = {
   mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
   update: "is npm's job now: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
     "`npm install -g @vatio-ai/cli@latest` updates a global install.",
-  propose: "was removed in 0.71.0. Test with `vatio eval` and publish with `vatio publish`."
+  propose: "was removed in 0.71.0. Test with `vatio test` and publish with `vatio publish`."
 };
 
 const config = new Config({ startDir: process.cwd() });
@@ -54,6 +54,12 @@ async function main(argv) {
 }
 
 async function run(command, args) {
+  // `--help` after a command asks about it. Left to the command, it reads as a
+  // message to send, an argument, or nothing at all: `vatio chat --help` said
+  // "--help" to the agent, and `vatio eval --help` started a run.
+  if (command !== undefined && (args.includes("--help") || args.includes("-h"))) {
+    return console.log(command === "chat" ? chatHelp() : helpText());
+  }
 
   switch (command) {
     case "version":
@@ -108,6 +114,8 @@ async function run(command, args) {
       return await instagram(config, args);
     case "flags":
       return await flags(config, args);
+    case "test":
+      return await test(config, args);
     case "eval":
       return await evalCommand(config, args);
     case "tools":
