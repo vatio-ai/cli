@@ -5,7 +5,7 @@
 // terminal; the credential lives in ~/.vatio/config.json.
 
 import { Config, ConfigError } from "../lib/config.mjs";
-import { HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
+import { CliOutdatedError, HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
 import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
 import { login, logout } from "../lib/commands/auth.mjs";
@@ -23,6 +23,7 @@ import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
 import { evalCommand, flags, test, tools } from "../lib/commands/improve.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
+import { runLatest } from "../lib/run-latest.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
 
 // Commands that existed and are gone, answered by name rather than as
@@ -139,6 +140,11 @@ async function run(command, args) {
 
 
 main(process.argv).catch(async (error) => {
+  if (error instanceof CliOutdatedError) {
+    // The run it starts reports itself; this one would count the command twice.
+    const code = runLatest(error, process.argv);
+    if (code !== null) process.exit(code);
+  }
   printError(error);
   await reportRun(config, { exitCode: 1, error });
   process.exit(1);
