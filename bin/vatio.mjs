@@ -5,7 +5,16 @@
 // terminal; the credential lives in ~/.vatio/config.json.
 
 import { Config, ConfigError } from "../lib/config.mjs";
-import { CliOutdatedError, HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
+import {
+  CliOutdatedError,
+  HttpError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  TrialClaimedError,
+  TrialGoneError
+} from "../lib/http.mjs";
+import { keepClaimedTrial } from "../lib/trial.mjs";
 import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
 import { login, logout } from "../lib/commands/auth.mjs";
@@ -49,9 +58,23 @@ async function main(argv) {
   const command = args.shift();
   beginRun(command, args);
   const updateCheck = startUpdateCheck(command);
-  await run(command, args);
+  await runKeepingTrial(command, args);
   await reportRun(config, { exitCode: process.exitCode ?? 0 });
   await printUpdateNotice(updateCheck);
+}
+
+// The trial this directory pushed to was kept in the browser since the last
+// command (lib/trial.mjs): the refused call did nothing, so this terminal signs
+// in to the account that kept it and the command runs again, as that account.
+async function runKeepingTrial(command, args) {
+  const again = [...args];
+  try {
+    await run(command, args);
+  } catch (error) {
+    if (!(error instanceof TrialClaimedError) || !error.workspace) throw error;
+    await keepClaimedTrial(config, error);
+    await run(command, again);
+  }
 }
 
 async function run(command, args) {
@@ -155,9 +178,22 @@ function printError(error) {
     console.error(error.message);
     return suggestFeedback();
   }
+  if (error instanceof TrialGoneError) {
+    config.clearTrial();
+    // The platform's hint says what to run next.
+    console.error("This trial no longer exists: nobody kept it in time, so it was deleted.");
+    return printTrailer(error);
+  }
   if (error instanceof UnauthorizedError) {
     console.error("Authentication failed (401). Run `vatio login`.");
     return printTrailer(error);
+  }
+  if (error instanceof ForbiddenError && errorCode(error) === "trial_unclaimed") {
+    // The platform says what needs an account; the link to keep it is only here.
+    const trial = config.trial();
+    const link = trial?.claim_url ?? 'the link `vatio push` printed after "Keep it"';
+    console.error(`${error.message} Keep it first: ${link}, then run vatio ${process.argv[2]} again (it signs this terminal in).`);
+    return printTrailer(error, { hint: false });
   }
   if (error instanceof ForbiddenError) {
     console.error("Access denied (403). Your token cannot access this workspace.");
@@ -181,14 +217,18 @@ function printError(error) {
 
 // What the platform said to do next, and the ids that find this request in
 // its logs.
-function printTrailer(error) {
+function printTrailer(error, { hint: withHint = true } = {}) {
   const hint = error.body?.hint;
-  if (hint && !(error instanceof UnauthorizedError)) console.error(`Next: ${hint}`);
+  if (withHint && hint && !(error instanceof UnauthorizedError)) console.error(`Next: ${hint}`);
 
-  const code = error.body?.error_key ?? (typeof error.body?.error === "string" ? error.body.error : error.body?.error?.code);
+  const code = errorCode(error);
   const ids = [code && `error=${code}`, error.requestId && `request_id=${error.requestId}`].filter(Boolean);
   if (ids.length > 0) console.error(ids.join(" "));
   suggestFeedback();
+}
+
+function errorCode(error) {
+  return error.body?.error_key ?? (typeof error.body?.error === "string" ? error.body.error : error.body?.error?.code);
 }
 
 // Said to coding agents only: a person at a terminal has better ways to
