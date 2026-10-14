@@ -1,9 +1,26 @@
 # @vatio-ai/cli
 
-The CLI for [Vatio](https://vatio.ai) — a production runtime for
-customer-facing AI agents. Describe an agent in one `vatio.yml` and deploy it to
-web chat, WhatsApp and Instagram; Vatio runs the conversation, the contacts, the
-identity, the safeguards and the handoff to a human.
+The CLI for [Vatio](https://vatio.ai), which gives the app you're building with
+a coding agent — Claude Code, Cursor or Codex — an AI agent that knows the app
+and its users. Your coding agent writes the agent into your project and drives
+this CLI; Vatio runs the conversations, with your users signed in, an inbox for
+your team, handoff to a person, and the replies your team reports turned into
+tests.
+
+## Start here
+
+In your app's project:
+
+```bash
+npx @vatio-ai/skills
+```
+
+Then, in Claude Code, run `/vatio-init` (in Cursor or Codex, ask it to use
+vatio-init). It reads your app, asks only what the code can't answer, and
+pushes a preview for you to try. Then `/vatio-add-to-app` puts the agent in
+your web, iOS or Android app. See the [docs](https://vatio.ai/docs/).
+
+## By hand
 
 ```bash
 npx @vatio-ai/cli init my-agent
