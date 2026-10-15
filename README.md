@@ -27,9 +27,7 @@ npx @vatio-ai/cli init my-agent
 npx @vatio-ai/cli push
 ```
 
-No runtime to install first: if you have Node 20 or newer, you have this. No
-account either: with none on the machine, `push` deploys a 7-day trial and
-prints a link to try it and one to keep it, which is where you sign in.
+No runtime to install first: if you have Node 20 or newer, you have this.
 
 The package is `@vatio-ai/cli`; the command it installs is `vatio`. So
 `npm install -g @vatio-ai/cli` gives you `vatio push`, and `npx @vatio-ai/cli push`
