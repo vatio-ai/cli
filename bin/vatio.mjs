@@ -18,7 +18,7 @@ import { keepClaimedTrial } from "../lib/trial.mjs";
 import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
 import { login, logout } from "../lib/commands/auth.mjs";
-import { configCommand, doctor, init, version } from "../lib/commands/misc.mjs";
+import { configCommand, doctor, init, version, whoami } from "../lib/commands/misc.mjs";
 import { diff, publish, push, rollback, status } from "../lib/commands/deploy.mjs";
 import { env } from "../lib/commands/env.mjs";
 import { keys, secrets, tokens } from "../lib/commands/workspace-admin.mjs";
@@ -91,7 +91,9 @@ async function run(command, args) {
     case "-v":
       return version();
     case "doctor":
-      return doctor(config);
+      return await doctor(config);
+    case "whoami":
+      return await whoami(config);
     case "login":
       return await login(config, args);
     case "logout":
