@@ -10,7 +10,7 @@ import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
 import { login, logout } from "../lib/commands/auth.mjs";
 import { configCommand, doctor, init, version, whoami } from "../lib/commands/misc.mjs";
-import { diff, publish, push, rollback, status } from "../lib/commands/deploy.mjs";
+import { diff, publish, pull, push, rollback, status } from "../lib/commands/deploy.mjs";
 import { env } from "../lib/commands/env.mjs";
 import { keys, secrets, tokens } from "../lib/commands/workspace-admin.mjs";
 import { templates, webhooks } from "../lib/commands/webhooks.mjs";
@@ -29,9 +29,6 @@ import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/tel
 // Commands that existed and are gone, answered by name rather than as
 // unknown: removed from the product, or what npm does now.
 const RETIRED = {
-  pull: "was removed: a deployed manifest only ever comes from a push, so it could never\n" +
-    "hand back anything your repository did not already have. Use `vatio diff --env live`,\n" +
-    "or read the manifest at GET /api/developer/v1/:slug/manifest.",
   issue: "was removed: report a problem on the public repository it belongs to --\n" +
     "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
   widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited in\n" +
@@ -81,6 +78,8 @@ async function run(command, args) {
       return await init(config, args);
     case "push":
       return await push(config, args);
+    case "pull":
+      return await pull(config, args);
     case "publish":
       return await publish(config, args);
     case "rollback":

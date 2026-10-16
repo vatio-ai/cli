@@ -71,6 +71,7 @@ login | logout              Authorize this machine in a browser, or revoke and f
 doctor                      Node, config, workspace and token status
 
 push                        Validate the workspace, then update preview
+pull [--env NAME]           Write the deployed agent back into vatio.yml and tools/
 publish                     Take preview live, once `vatio test` has tested it
 diff [--env NAME]           What this directory would change
 status                      Preview and live deployment state
