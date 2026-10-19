@@ -21,6 +21,7 @@ import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
+import { messages } from "../lib/commands/messages.mjs";
 import { evalCommand, flags, test, tools } from "../lib/commands/improve.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { runLatest } from "../lib/run-latest.mjs";
@@ -104,6 +105,8 @@ async function run(command, args) {
       return await auth(config, args);
     case "chat":
       return await chat(config, args);
+    case "messages":
+      return await messages(config, args);
     case "kb":
       return await kb(config, args);
     case "business":
