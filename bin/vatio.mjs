@@ -19,6 +19,7 @@ import { auth } from "../lib/commands/identity-key.mjs";
 import { chat, chatHelp } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
+import { quietHours } from "../lib/commands/quiet-hours.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
 import { messages } from "../lib/commands/messages.mjs";
@@ -111,6 +112,8 @@ async function run(command, args) {
       return await kb(config, args);
     case "business":
       return await business(config, args);
+    case "quiet-hours":
+      return await quietHours(config, args);
     case "secrets":
       return await secrets(config, args);
     case "whatsapp":
