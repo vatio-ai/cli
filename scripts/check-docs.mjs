@@ -15,6 +15,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import { COMMANDS as SUGGESTED, SUBCOMMAND_OWNERS } from "../lib/suggest.mjs";
+
 const here = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(here, "..");
 const repoRoot = join(packageRoot, "..");
@@ -68,6 +70,29 @@ const problems = [];
 const dispatched = commandsFromDispatch(readFileSync(BIN, "utf8"));
 const helped = commandsFrom(readFileSync(HELP, "utf8"), dispatched);
 const documented = commandsFrom(docsText, dispatched);
+
+// The fourth place a command lives: the list `vatio <typo>` suggests from.
+// Imported rather than parsed, because it is a plain exported array -- and
+// guarded here because a command missing from it is invisible exactly when
+// somebody is already lost.
+for (const command of dispatched) {
+  if (!SUGGESTED.includes(command)) {
+    problems.push(`\`vatio ${command}\` is dispatched but missing from COMMANDS in lib/suggest.mjs`);
+  }
+}
+for (const command of SUGGESTED) {
+  if (!dispatched.has(command)) {
+    problems.push(`lib/suggest.mjs offers \`vatio ${command}\`, which the CLI does not dispatch`);
+  }
+}
+// The commands named as owners of a bare subcommand (`show` -> `vatio chat
+// show`) have to exist too: that answer is printed to somebody who is already
+// lost, and naming a command the CLI does not have would leave them worse off.
+for (const command of SUBCOMMAND_OWNERS) {
+  if (!dispatched.has(command)) {
+    problems.push(`lib/suggest.mjs points a subcommand at \`vatio ${command}\`, which the CLI does not dispatch`);
+  }
+}
 
 for (const command of dispatched) {
   if (!helped.has(command)) {

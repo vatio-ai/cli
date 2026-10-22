@@ -8,6 +8,8 @@ import { Config, ConfigError } from "../lib/config.mjs";
 import { CliOutdatedError, HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
 import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
+import { unknownCommandMessage } from "../lib/suggest.mjs";
+import { changelog } from "../lib/release-notes.mjs";
 import { login, logout } from "../lib/commands/auth.mjs";
 import { configCommand, doctor, init, version, whoami } from "../lib/commands/misc.mjs";
 import { diff, publish, pull, push, rollback, status } from "../lib/commands/deploy.mjs";
@@ -36,8 +38,9 @@ const RETIRED = {
   widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited in\n" +
     "the inbox, under Channels → Widget.",
   mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
-  update: "is npm's job now: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
-    "`npm install -g @vatio-ai/cli@latest` updates a global install.",
+  update: "is npm's job: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
+    "`npm install -g @vatio-ai/cli@latest` updates a global install.\n" +
+    "`vatio changelog` says which release is current and what it changed.",
   propose: "was removed in 0.71.0. Test with `vatio test` and publish with `vatio publish`."
 };
 
@@ -128,6 +131,8 @@ async function run(command, args) {
       return await evalCommand(config, args);
     case "tools":
       return await tools(config, args);
+    case "changelog":
+      return await changelog(config, args);
     case "docs":
       return await docs(config, args);
     case "feedback":
@@ -141,7 +146,7 @@ async function run(command, args) {
       return console.log(helpText());
     default:
       if (RETIRED[command]) fail(`\`vatio ${command}\` ${RETIRED[command]}`);
-      fail(`Unknown command: ${command}\n\n${helpText()}`);
+      fail(unknownCommandMessage(command, args));
   }
 }
 
