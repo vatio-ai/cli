@@ -16,7 +16,7 @@ import { diff, publish, pull, push, rollback, status } from "../lib/commands/dep
 import { env } from "../lib/commands/env.mjs";
 import { keys, secrets } from "../lib/commands/workspace-admin.mjs";
 import { templates, webhooks } from "../lib/commands/webhooks.mjs";
-import { routines } from "../lib/commands/routines.mjs";
+import { contacts } from "../lib/commands/contacts.mjs";
 import { auth } from "../lib/commands/identity-key.mjs";
 import { chat, chatHelp } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
@@ -102,8 +102,8 @@ async function run(command, args) {
       return await templates(config, args);
     case "webhooks":
       return await webhooks(config, args);
-    case "routines":
-      return await routines(config, args);
+    case "contacts":
+      return await contacts(config, args);
     case "auth":
       return await auth(config, args);
     case "chat":
