@@ -17,8 +17,8 @@ npx @vatio-ai/skills
 
 Then, in Claude Code, run `/vatio-init` (in Cursor or Codex, ask it to use
 vatio-init). It reads your app, asks only what the code can't answer, and
-pushes a preview for you to try. Then `/vatio-add-to-app` puts the agent in
-your web, iOS, Android or Flutter app. See the [docs](https://vatio.ai/docs/).
+pushes a preview for you to try. Then ask your coding agent to put the agent
+in your web, iOS, Android or Flutter app. See the [docs](https://vatio.ai/docs/).
 
 ## By hand
 
