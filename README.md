@@ -36,12 +36,15 @@ is the same thing without installing anything.
 ## If you are a coding agent
 
 ```bash
-vatio docs --save   # the whole developer contract as markdown, live from Vatio
+vatio docs --save         # the whole developer contract as markdown, live from Vatio
+vatio docs tools          # one page of it
+vatio docs search TERM    # the sections that mention TERM, with their page
 ```
 
 `vatio docs` prints the same contract that
 [vatio.ai/docs/docs.md](https://vatio.ai/docs/docs.md) serves, and
-`vatio docs --save` writes it next to the workspace.
+`vatio docs --save` writes it next to the workspace. `vatio docs PAGE` and
+`vatio docs search TERM` print only the part you need.
 
 Don't guess `vatio.yml` keys. Unknown root keys fail validation, and the rules
 that judge a workspace live on the server — so the printed contract is the
