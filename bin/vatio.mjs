@@ -15,7 +15,7 @@ import { configCommand, doctor, init, version, whoami } from "../lib/commands/mi
 import { diff, publish, pull, push, rollback, status } from "../lib/commands/deploy.mjs";
 import { env } from "../lib/commands/env.mjs";
 import { keys, secrets } from "../lib/commands/workspace-admin.mjs";
-import { templates, webhooks } from "../lib/commands/webhooks.mjs";
+import { webhooks } from "../lib/commands/webhooks.mjs";
 import { contacts } from "../lib/commands/contacts.mjs";
 import { auth } from "../lib/commands/identity-key.mjs";
 import { chat, chatHelp } from "../lib/commands/chat.mjs";
@@ -25,8 +25,7 @@ import { quietHours } from "../lib/commands/quiet-hours.mjs";
 import { team } from "../lib/commands/team.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
-import { messages } from "../lib/commands/messages.mjs";
-import { evalCommand, flags, test, tools } from "../lib/commands/improve.mjs";
+import { test, tools } from "../lib/commands/improve.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { runLatest } from "../lib/run-latest.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
@@ -98,8 +97,6 @@ async function run(command, args) {
       return await diff(config, args);
     case "keys":
       return await keys(config, args);
-    case "templates":
-      return await templates(config, args);
     case "webhooks":
       return await webhooks(config, args);
     case "contacts":
@@ -108,8 +105,6 @@ async function run(command, args) {
       return await auth(config, args);
     case "chat":
       return await chat(config, args);
-    case "messages":
-      return await messages(config, args);
     case "kb":
       return await kb(config, args);
     case "business":
@@ -124,12 +119,8 @@ async function run(command, args) {
       return await whatsapp(config, args);
     case "instagram":
       return await instagram(config, args);
-    case "flags":
-      return await flags(config, args);
     case "test":
       return await test(config, args);
-    case "eval":
-      return await evalCommand(config, args);
     case "tools":
       return await tools(config, args);
     case "changelog":
