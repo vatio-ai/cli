@@ -84,20 +84,20 @@ init [SLUG]                 Create vatio.yml here, and the remote to match
 login | logout              Authorize this machine in a browser, or revoke and forget it
 doctor                      Node, config, workspace and token status
 
-push                        Validate the workspace, then update preview
-pull [--env NAME]           Write the deployed agent back into vatio.yml and tools/
-publish                     Take preview live, once `vatio test` has tested it
-diff [--env NAME]           What this directory would change
-status                      Preview and live deployment state
-rollback                    Restore the previous live deployment
+push                        Validate the workspace, then deploy it: your team has it at once,
+                            everyone once the tests that pass today pass on it
+pull                        Write the deployed agent back into vatio.yml and tools/
+diff                        What this directory would change
+status                      Where the newest change stands
+rollback                    Put everyone back on the version before the last change
 
-chat "message" [--env NAME] [--new]
+chat "message" [--new]
                             Talk to your own agent; the token is the identity
 chat show [CHAT_ID] [--json]
                             The chat you are in, or any chat in the workspace, with its tool calls
 
 flags                       Every open report from the inbox, for your coding agent to fix
-test                        Test every report against preview, in the background
+test                        Test every report against your team's version, in the background
 test --wait                 Wait for the report; exits 1 if a case fails
 tools [--env NAME]          How each tool's backend has been answering
 
@@ -105,7 +105,7 @@ kb list|show|create|rm       Knowledge bases
 kb write|cat|rm-entry        Entries, from a file or stdin
 
 secrets list|set|rm          Credentials your tools read
-keys list|create|origins|revoke  API keys: publishable (page, app) and secret (backend)
+keys list|create|revoke     API keys: publishable (page, app) and secret (backend)
 auth --new-key               Keypair that signs the visitor's JWT
 
 whatsapp | instagram         Set up in the inbox; prints the link
@@ -113,9 +113,6 @@ whatsapp | instagram         Set up in the inbox; prints the link
 docs [--save [PATH]]         The whole developer contract
 config show|set|unset        base_url and token, per developer
 ```
-
-`--env NAME` targets an environment: `preview`, the next version, or `live`,
-what visitors talk to.
 
 Run `npx @vatio-ai/cli help` for the whole surface, and see
 [vatio.ai/docs](https://vatio.ai/docs) for the platform.
