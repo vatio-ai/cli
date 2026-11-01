@@ -2,25 +2,31 @@
 
 The CLI for [Vatio](https://vatio.ai), which gives the app you're building with
 a coding agent — Claude Code, Cursor or Codex — an AI agent that knows the app
-and its users. Your coding agent writes the agent into your project and drives
-this CLI; Vatio runs the conversations, with your users signed in, an inbox for
-your team, handoff to a person, and the replies your team reports turned into
-tests.
+and its users. Vatio runs the conversations, with your users signed in, an
+inbox for your team, handoff to a person, and the replies your team reports
+turned into tests.
 
 ## Start here
 
-In your app's project:
+Your coding agent builds and tests the agent through the
+[Vatio MCP](https://vatio.ai/docs/mcp), with nothing in your repository. In
+your app's project:
 
 ```bash
 npx @vatio-ai/skills
 ```
 
-Then, in Claude Code, run `/vatio-init` (in Cursor or Codex, ask it to use
-vatio-init). It reads your app, asks only what the code can't answer, and
-pushes a preview for you to try. Then ask your coding agent to put the agent
-in your web, iOS, Android or Flutter app. See the [docs](https://vatio.ai/docs/).
+It adds the skills and the MCP to the project. Then, in Claude Code, run
+`/vatio-init` (in Cursor or Codex, ask it to use vatio-init). It reads your
+app, asks only what the code can't answer, builds the agent, writes its tests
+and puts it in your web, iOS, Android or Flutter app. See the
+[docs](https://vatio.ai/docs/).
 
-## By hand
+This CLI is for a team that keeps the agent as files (`vatio.yml`), and for
+what the MCP leaves to a terminal: `vatio feedback`, `vatio share-session`
+and `vatio docs`.
+
+## As files
 
 ```bash
 npx @vatio-ai/cli init my-agent
@@ -63,8 +69,13 @@ support-agent/
 
 Only create the files you need. Nothing constrains where that directory lives —
 an agent can sit inside the repository of the backend it calls, and every
-command except `init` finds it by walking up from the current directory. There
-is no `--workspace` flag.
+command except `init` finds it by walking up from the current directory.
+
+A workspace with no `vatio.yml`, built through the Vatio MCP, is named with
+`--workspace SLUG` or `VATIO_WORKSPACE` instead, and either wins over a
+`vatio.yml`. `init`, `push`, `pull`, `diff` and `auth` work on the files, so
+they go by the directory alone and refuse `--workspace`. See
+[Choosing the workspace](https://vatio.ai/docs/cli/#choosing-the-workspace).
 
 ## Commands
 

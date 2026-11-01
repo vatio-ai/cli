@@ -4,7 +4,7 @@
 // The workspace is parsed by the platform, so a client is HTTP and a
 // terminal; the credential lives in ~/.vatio/config.json.
 
-import { Config, ConfigError } from "../lib/config.mjs";
+import { Config, ConfigError, WORKSPACE_ENV, takeWorkspaceFlag } from "../lib/config.mjs";
 import { CliOutdatedError, HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
 import { UserError, fail } from "../lib/support.mjs";
 import { helpText } from "../lib/help.mjs";
@@ -37,18 +37,27 @@ const RETIRED = {
     "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
   widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited in\n" +
     "the inbox, under Channels → Widget.",
-  mcp: "was removed. Point your coding agent at `vatio docs --save` and let it run the CLI.",
+  mcp: "was removed: the Vatio MCP is https://vatio.ai/mcp, and `npx @vatio-ai/skills` adds it to a project.",
   update: "is npm's job: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
     "`npm install -g @vatio-ai/cli@latest` updates a global install.\n" +
     "`vatio changelog` says which release is current and what it changed.",
   propose: "was removed in 0.71.0. Test with `vatio test` and publish with `vatio publish`."
 };
 
+// The commands that read or write the workspace's files. They take the
+// workspace from the directory's vatio.yml and nothing else (lib/config.mjs
+// says why), so --workspace, or a VATIO_WORKSPACE naming another workspace,
+// is refused before they start.
+const DIRECTORY_COMMANDS = new Set(["init", "push", "pull", "diff", "auth"]);
+
 const config = new Config({ startDir: process.cwd() });
+let invoked;
 
 async function main(argv) {
   const args = argv.slice(2);
+  config.workspaceFlag = takeWorkspaceFlag(args);
   const command = args.shift();
+  invoked = command;
   beginRun(command, args);
   const updateCheck = startUpdateCheck(command);
   await run(command, args);
@@ -63,6 +72,7 @@ async function run(command, args) {
   if (command !== undefined && (args.includes("--help") || args.includes("-h"))) {
     return console.log(command === "chat" ? chatHelp() : helpText());
   }
+  if (DIRECTORY_COMMANDS.has(command)) config.bindToDirectory(command);
 
   switch (command) {
     case "version":
@@ -138,7 +148,8 @@ async function run(command, args) {
       return console.log(helpText());
     default:
       if (RETIRED[command]) fail(`\`vatio ${command}\` ${RETIRED[command]}`);
-      fail(unknownCommandMessage(command, args));
+      // The flag rides along into the command it suggests.
+      fail(unknownCommandMessage(command, config.workspaceFlag === null ? args : [...args, "--workspace", config.workspaceFlag]));
   }
 }
 
@@ -168,8 +179,11 @@ function printError(error) {
     return printTrailer(error);
   }
   if (error instanceof NotFoundError) {
+    const named = { "--workspace": "passed to --workspace", [WORKSPACE_ENV]: `in ${WORKSPACE_ENV}` }[config.workspaceSource()];
     console.error(
-      "Remote resource not found (404). Check the workspace slug; `vatio push` creates a missing remote automatically."
+      named
+        ? `Remote resource not found (404). Check the workspace slug ${named}; \`vatio whoami\` lists the workspaces this machine reaches.`
+        : "Remote resource not found (404). Check the workspace slug; `vatio push` creates a missing remote automatically."
     );
     return printTrailer(error);
   }
@@ -198,7 +212,7 @@ function printTrailer(error) {
 // Said to coding agents only: a person at a terminal has better ways to
 // complain, and does not need the line on every typo.
 function suggestFeedback() {
-  if (!telemetryEnabled() || !isCodingAgent() || ["feedback", "share-session"].includes(process.argv[2])) return;
+  if (!telemetryEnabled() || !isCodingAgent() || ["feedback", "share-session"].includes(invoked)) return;
   console.error(
     '\nIf this has you stuck, tell the Vatio team: vatio feedback "what you were trying to do and what got in the way"'
   );
