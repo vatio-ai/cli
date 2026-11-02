@@ -26,6 +26,8 @@ import { team } from "../lib/commands/team.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
 import { test, tools } from "../lib/commands/improve.mjs";
+import { activity, plan, security, supportAccess, transfer, workspace } from "../lib/commands/owner.mjs";
+import { analytics, testers, widget } from "../lib/commands/reach.mjs";
 import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
 import { runLatest } from "../lib/run-latest.mjs";
 import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
@@ -35,8 +37,6 @@ import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/tel
 const RETIRED = {
   issue: "was removed: report a problem on the public repository it belongs to --\n" +
     "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
-  widget: "was removed: `vatio env` prints the snippet and its token, and the look is edited in\n" +
-    "the inbox, under Channels → Widget.",
   mcp: "was removed: the Vatio MCP is https://vatio.ai/mcp, and `npx @vatio-ai/skills` adds it to a project.",
   update: "is npm's job: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
     "`npm install -g @vatio-ai/cli@latest` updates a global install.\n" +
@@ -133,6 +133,24 @@ async function run(command, args) {
       return await test(config, args);
     case "tools":
       return await tools(config, args);
+    case "widget":
+      return await widget(config, args);
+    case "analytics":
+      return await analytics(config, args);
+    case "testers":
+      return await testers(config, args);
+    case "security":
+      return await security(config, args);
+    case "activity":
+      return await activity(config, args);
+    case "support-access":
+      return await supportAccess(config, args);
+    case "transfer":
+      return await transfer(config, args);
+    case "workspace":
+      return await workspace(config, args);
+    case "plan":
+      return await plan(config, args);
     case "changelog":
       return await changelog(config, args);
     case "docs":
@@ -174,8 +192,15 @@ function printError(error) {
     console.error("Authentication failed (401). Run `vatio login`.");
     return printTrailer(error);
   }
+  // The platform says why, in the same words the MCP and the inbox get; the
+  // generic lines below are for an answer that does not.
+  const said = error?.body?.error_description;
   if (error instanceof ForbiddenError) {
-    console.error("Access denied (403). Your token cannot access this workspace.");
+    console.error(said ? `Access denied (403): ${said}` : "Access denied (403). Your token cannot access this workspace.");
+    return printTrailer(error);
+  }
+  if (error instanceof NotFoundError && said && error.body.error !== "workspace_not_found") {
+    console.error(`Not found (404): ${said}`);
     return printTrailer(error);
   }
   if (error instanceof NotFoundError) {
