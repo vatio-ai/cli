@@ -1,6 +1,6 @@
 {
   "name": "@vatio-ai/cli",
-  "version": "0.140.0",
+  "version": "0.140.1",
   "description": "Vatio CLI — deploy and manage Vatio agent workspaces",
   "keywords": [
     "vatio",
