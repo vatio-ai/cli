@@ -22,6 +22,7 @@ import { chat, chatHelp } from "../lib/commands/chat.mjs";
 import { kb } from "../lib/commands/knowledge.mjs";
 import { business } from "../lib/commands/business.mjs";
 import { quietHours } from "../lib/commands/quiet-hours.mjs";
+import { schedules } from "../lib/commands/schedules.mjs";
 import { team } from "../lib/commands/team.mjs";
 import { instagram, whatsapp } from "../lib/commands/channels.mjs";
 import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
@@ -121,6 +122,8 @@ async function run(command, args) {
       return await business(config, args);
     case "quiet-hours":
       return await quietHours(config, args);
+    case "schedules":
+      return await schedules(config, args);
     case "team":
       return await team(config, args);
     case "secrets":
