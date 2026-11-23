@@ -1,138 +1,16 @@
-# @vatio-ai/cli
+# @vatio-ai/cli (retired)
 
-The CLI for [Vatio](https://vatio.ai), which gives the app you're building with
-a coding agent — Claude Code, Cursor or Codex — an AI agent that knows the app
-and its users. Vatio runs the conversations, with your users signed in, an
-inbox for your team, handoff to a person, and the replies your team reports
-turned into tests.
-
-## Start here
-
-Your coding agent builds and tests the agent through the
-[Vatio MCP](https://vatio.ai/docs/mcp), with nothing in your repository. In
-your app's project:
+The Vatio CLI is retired. Build and change your agent through the Vatio MCP:
 
 ```bash
-npx @vatio-ai/skills
+claude mcp add --transport http vatio https://vatio.ai/mcp
 ```
 
-It adds the skills and the MCP to the project. Then, in Claude Code, run
-`/vatio-init` (in Cursor or Codex, ask it to use vatio-init). It reads your
-app, asks only what the code can't answer, builds the agent, writes its tests
-and puts it in your web, iOS, Android or Flutter app. See the
-[docs](https://vatio.ai/docs/).
+or `npx @vatio-ai/skills` in a project, or add the remote server
+`https://vatio.ai/mcp` to Claude, ChatGPT, Cursor or any MCP client.
 
-This CLI is for a team that keeps the agent as files (`vatio.yml`), and for
-what the MCP leaves to a terminal: `vatio feedback`, `vatio share-session`
-and `vatio docs`.
+What the MCP cannot do is in the inbox, <https://inbox.vatio.ai>: creating a
+secret key or a webhook, connecting WhatsApp or Instagram, and paying for a
+plan. Your agent is already in Vatio, and `vatio.yml` is no longer read.
 
-## As files
-
-```bash
-npx @vatio-ai/cli init my-agent
-npx @vatio-ai/cli push
-```
-
-No runtime to install first: if you have Node 20 or newer, you have this.
-
-The package is `@vatio-ai/cli`; the command it installs is `vatio`. So
-`npm install -g @vatio-ai/cli` gives you `vatio push`, and `npx @vatio-ai/cli push`
-is the same thing without installing anything.
-
-## If you are a coding agent
-
-```bash
-vatio docs --save         # the whole developer contract as markdown, live from Vatio
-vatio docs tools          # one page of it
-vatio docs search TERM    # the sections that mention TERM, with their page
-```
-
-`vatio docs` prints the same contract that
-[vatio.ai/docs/docs.md](https://vatio.ai/docs/docs.md) serves, and
-`vatio docs --save` writes it next to the workspace. `vatio docs PAGE` and
-`vatio docs search TERM` print only the part you need.
-
-Don't guess `vatio.yml` keys. Unknown root keys fail validation, and the rules
-that judge a workspace live on the server — so the printed contract is the
-current one by construction.
-
-## What a workspace is
-
-A directory with a `vatio.yml` in it:
-
-```text
-support-agent/
-  vatio.yml          # required: the agent, its tools, its knowledge
-  tools/*.yml        # one HTTP request each, described in YAML
-  identity.pub       # public key that verifies the JWT saying who a visitor is
-```
-
-Only create the files you need. Nothing constrains where that directory lives —
-an agent can sit inside the repository of the backend it calls, and every
-command except `init` finds it by walking up from the current directory.
-
-A workspace with no `vatio.yml`, built through the Vatio MCP, is named with
-`--workspace SLUG` or `VATIO_WORKSPACE` instead, and either wins over a
-`vatio.yml`. `init`, `push`, `pull`, `diff` and `auth` work on the files, so
-they go by the directory alone and refuse `--workspace`. See
-[Choosing the workspace](https://vatio.ai/docs/cli/#choosing-the-workspace).
-
-## Commands
-
-```
-init [SLUG]                 Create vatio.yml here, and the remote to match
-login | logout              Authorize this machine in a browser, or revoke and forget it
-doctor                      Node, config, workspace and token status
-
-push                        Validate the workspace, then deploy it: your team has it at once,
-                            everyone once the tests that pass today pass on it
-pull                        Write the deployed agent back into vatio.yml and tools/
-diff                        What this directory would change
-status                      Where the newest change stands
-rollback                    Put everyone back on the version before the last change
-
-chat "message" [--new]
-                            Talk to your own agent; the token is the identity
-chat show [CHAT_ID] [--json]
-                            The chat you are in, or any chat in the workspace, with its tool calls
-
-flags                       Every open report from the inbox, for your coding agent to fix
-test                        Test every report against your team's version, in the background
-test --wait                 Wait for the report; exits 1 if a case fails
-tools [--env NAME]          How each tool's backend has been answering
-
-kb list|show|create|rm       Knowledge bases
-kb write|cat|rm-entry        Entries, from a file or stdin
-
-secrets list|set|rm          Credentials your tools read
-keys list|create|revoke     API keys: publishable (page, app) and secret (backend)
-auth --new-key               Keypair that signs the visitor's JWT
-
-whatsapp | instagram         Set up in the inbox; prints the link
-
-docs [--save [PATH]]         The whole developer contract
-config show|set|unset        base_url and token, per developer
-```
-
-Run `npx @vatio-ai/cli help` for the whole surface, and see
-[vatio.ai/docs](https://vatio.ai/docs) for the platform.
-
-## Where your credentials live
-
-`~/.vatio/config.json`, or `$VATIO_HOME/config.json` — per developer, never
-inside a repository. `VATIO_BASE_URL` and `VATIO_TOKEN` override it for one
-command, which is what CI should use.
-
-## Where the rules live
-
-Whether a workspace is valid is answered by Vatio, not by this package: `push`
-and `diff` send the directory and read the result back. So the rules that
-judge your workspace are always the deployed ones, and this CLI never has to be
-upgraded to understand a new one.
-
-## Issues
-
-Bugs and questions go to [issues](https://github.com/vatio-ai/cli/issues). This repository is a read-only mirror of
-the CLI as it ships inside Vatio, so a pull request cannot be merged here: open
-an issue describing the change instead. Release notes live in the
-[changelog](https://vatio.ai/docs/changelog).
+Docs: <https://vatio.ai/docs/mcp>.

@@ -1,7 +1,7 @@
 {
   "name": "@vatio-ai/cli",
-  "version": "0.143.0",
-  "description": "Vatio CLI — deploy and manage Vatio agent workspaces",
+  "version": "0.144.0",
+  "description": "Vatio CLI (retired): use the Vatio MCP at https://vatio.ai/mcp",
   "keywords": [
     "vatio",
     "agent",
@@ -25,13 +25,9 @@
   },
   "files": [
     "bin",
-    "lib",
     "README.md",
     "LICENSE.txt"
   ],
-  "dependencies": {
-    "yaml": "^2.5.0"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/vatio-ai/cli"

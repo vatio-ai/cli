@@ -1,247 +1,34 @@
 #!/usr/bin/env node
-// The Vatio CLI, as an npm package: `npx @vatio-ai/cli push`.
-//
-// The workspace is parsed by the platform, so a client is HTTP and a
-// terminal; the credential lives in ~/.vatio/config.json.
+// The Vatio CLI is retired. This last release only says where to go instead:
+// the Vatio MCP for building, the inbox for what the MCP cannot do. Every
+// earlier release runs this one (the backend sends them here), so whoever
+// still types `vatio` reads this.
 
-import { Config, ConfigError, WORKSPACE_ENV, takeWorkspaceFlag } from "../lib/config.mjs";
-import { CliOutdatedError, HttpError, UnauthorizedError, ForbiddenError, NotFoundError } from "../lib/http.mjs";
-import { UserError, fail } from "../lib/support.mjs";
-import { helpText } from "../lib/help.mjs";
-import { unknownCommandMessage } from "../lib/suggest.mjs";
-import { changelog } from "../lib/release-notes.mjs";
-import { login, logout } from "../lib/commands/auth.mjs";
-import { configCommand, doctor, init, version, whoami } from "../lib/commands/misc.mjs";
-import { diff, publish, pull, push, rollback, status } from "../lib/commands/deploy.mjs";
-import { env } from "../lib/commands/env.mjs";
-import { keys, secrets } from "../lib/commands/workspace-admin.mjs";
-import { webhooks } from "../lib/commands/webhooks.mjs";
-import { contacts } from "../lib/commands/contacts.mjs";
-import { auth } from "../lib/commands/identity-key.mjs";
-import { chat, chatHelp } from "../lib/commands/chat.mjs";
-import { kb } from "../lib/commands/knowledge.mjs";
-import { business } from "../lib/commands/business.mjs";
-import { quietHours } from "../lib/commands/quiet-hours.mjs";
-import { schedules } from "../lib/commands/schedules.mjs";
-import { team } from "../lib/commands/team.mjs";
-import { instagram, whatsapp } from "../lib/commands/channels.mjs";
-import { docs, feedback, shareSession } from "../lib/commands/support-commands.mjs";
-import { test, tools } from "../lib/commands/improve.mjs";
-import { activity, plan, security, supportAccess, transfer, workspace } from "../lib/commands/owner.mjs";
-import { analytics, testers, widget } from "../lib/commands/reach.mjs";
-import { printUpdateNotice, startUpdateCheck } from "../lib/update-notice.mjs";
-import { runLatest } from "../lib/run-latest.mjs";
-import { beginRun, isCodingAgent, reportRun, telemetryEnabled } from "../lib/telemetry.mjs";
+import { readFileSync } from "node:fs";
 
-// Commands that existed and are gone, answered by name rather than as
-// unknown: removed from the product, or what npm does now.
-const RETIRED = {
-  issue: "was removed: report a problem on the public repository it belongs to --\n" +
-    "https://github.com/vatio-ai/cli/issues (or sdk, ios, ruby under github.com/vatio-ai).",
-  mcp: "was removed: the Vatio MCP is https://vatio.ai/mcp, and `npx @vatio-ai/skills` adds it to a project.",
-  update: "is npm's job: `npx @vatio-ai/cli@latest` always runs the current release, and\n" +
-    "`npm install -g @vatio-ai/cli@latest` updates a global install.\n" +
-    "`vatio changelog` says which release is current and what it changed.",
-  propose: "was removed in 0.71.0. Test with `vatio test` and publish with `vatio publish`."
-};
+const { version } = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const command = process.argv[2];
 
-// The commands that read or write the workspace's files. They take the
-// workspace from the directory's vatio.yml and nothing else (lib/config.mjs
-// says why), so --workspace, or a VATIO_WORKSPACE naming another workspace,
-// is refused before they start.
-const DIRECTORY_COMMANDS = new Set(["init", "push", "pull", "diff", "auth"]);
-
-const config = new Config({ startDir: process.cwd() });
-let invoked;
-
-async function main(argv) {
-  const args = argv.slice(2);
-  config.workspaceFlag = takeWorkspaceFlag(args);
-  const command = args.shift();
-  invoked = command;
-  beginRun(command, args);
-  const updateCheck = startUpdateCheck(command);
-  await run(command, args);
-  await reportRun(config, { exitCode: process.exitCode ?? 0 });
-  await printUpdateNotice(updateCheck);
+if (command === "version" || command === "--version" || command === "-v") {
+  console.log(`vatio ${version} (retired)`);
+  process.exit(0);
 }
 
-async function run(command, args) {
-  // `--help` after a command asks about it. Left to the command, it reads as a
-  // message to send, an argument, or nothing at all: `vatio chat --help` said
-  // "--help" to the agent, and `vatio eval --help` started a run.
-  if (command !== undefined && (args.includes("--help") || args.includes("-h"))) {
-    return console.log(command === "chat" ? chatHelp() : helpText());
-  }
-  if (DIRECTORY_COMMANDS.has(command)) config.bindToDirectory(command);
+console.error(`The Vatio CLI is retired. Build and change your agent through the Vatio MCP instead.
 
-  switch (command) {
-    case "version":
-    case "--version":
-    case "-v":
-      return version();
-    case "doctor":
-      return await doctor(config);
-    case "whoami":
-      return await whoami(config);
-    case "login":
-      return await login(config, args);
-    case "logout":
-      return await logout(config);
-    case "config":
-      return configCommand(config, args);
-    case "init":
-      return await init(config, args);
-    case "push":
-      return await push(config, args);
-    case "pull":
-      return await pull(config, args);
-    case "publish":
-      return await publish(config, args);
-    case "rollback":
-      return await rollback(config);
-    case "status":
-      return await status(config);
-    case "env":
-      return await env(config, args);
-    case "diff":
-      return await diff(config, args);
-    case "keys":
-      return await keys(config, args);
-    case "webhooks":
-      return await webhooks(config, args);
-    case "contacts":
-      return await contacts(config, args);
-    case "auth":
-      return await auth(config, args);
-    case "chat":
-      return await chat(config, args);
-    case "kb":
-      return await kb(config, args);
-    case "business":
-      return await business(config, args);
-    case "quiet-hours":
-      return await quietHours(config, args);
-    case "schedules":
-      return await schedules(config, args);
-    case "team":
-      return await team(config, args);
-    case "secrets":
-      return await secrets(config, args);
-    case "whatsapp":
-      return await whatsapp(config, args);
-    case "instagram":
-      return await instagram(config, args);
-    case "test":
-      return await test(config, args);
-    case "tools":
-      return await tools(config, args);
-    case "widget":
-      return await widget(config, args);
-    case "analytics":
-      return await analytics(config, args);
-    case "testers":
-      return await testers(config, args);
-    case "security":
-      return await security(config, args);
-    case "activity":
-      return await activity(config, args);
-    case "support-access":
-      return await supportAccess(config, args);
-    case "transfer":
-      return await transfer(config, args);
-    case "workspace":
-      return await workspace(config, args);
-    case "plan":
-      return await plan(config, args);
-    case "changelog":
-      return await changelog(config, args);
-    case "docs":
-      return await docs(config, args);
-    case "feedback":
-      return await feedback(config, args);
-    case "share-session":
-      return await shareSession(config, args);
-    case "help":
-    case "-h":
-    case "--help":
-    case undefined:
-      return console.log(helpText());
-    default:
-      if (RETIRED[command]) fail(`\`vatio ${command}\` ${RETIRED[command]}`);
-      // The flag rides along into the command it suggests.
-      fail(unknownCommandMessage(command, config.workspaceFlag === null ? args : [...args, "--workspace", config.workspaceFlag]));
-  }
-}
+Add the MCP:
+  Claude Code     claude mcp add --transport http vatio https://vatio.ai/mcp
+  In a project    npx @vatio-ai/skills
+  Claude, ChatGPT, Cursor or any MCP client: add the remote server https://vatio.ai/mcp
 
+Then ask your coding agent for what you did here: list_workspaces, get_agent,
+update_agent, set_tool, write_knowledge_entry, set_schedule, chat_with_agent,
+add_test, run_tests, get_status, rollback, list_conversations and the rest.
 
-main(process.argv).catch(async (error) => {
-  if (error instanceof CliOutdatedError) {
-    // The run it starts reports itself; this one would count the command twice.
-    const code = runLatest(error, process.argv);
-    if (code !== null) process.exit(code);
-  }
-  printError(error);
-  await reportRun(config, { exitCode: 1, error });
-  process.exit(1);
-});
+What the MCP cannot do is in the inbox, https://inbox.vatio.ai: creating a
+secret key or a webhook (shown once), connecting WhatsApp or Instagram (Meta's
+consent opens in a browser) and paying for a plan.
 
-function printError(error) {
-  if (error instanceof UserError || error instanceof ConfigError) {
-    console.error(error.message);
-    return suggestFeedback();
-  }
-  if (error instanceof UnauthorizedError) {
-    console.error("Authentication failed (401). Run `vatio login`.");
-    return printTrailer(error);
-  }
-  // The platform says why, in the same words the MCP and the inbox get; the
-  // generic lines below are for an answer that does not.
-  const said = error?.body?.error_description;
-  if (error instanceof ForbiddenError) {
-    console.error(said ? `Access denied (403): ${said}` : "Access denied (403). Your token cannot access this workspace.");
-    return printTrailer(error);
-  }
-  if (error instanceof NotFoundError && said && error.body.error !== "workspace_not_found") {
-    console.error(`Not found (404): ${said}`);
-    return printTrailer(error);
-  }
-  if (error instanceof NotFoundError) {
-    const named = { "--workspace": "passed to --workspace", [WORKSPACE_ENV]: `in ${WORKSPACE_ENV}` }[config.workspaceSource()];
-    console.error(
-      named
-        ? `Remote resource not found (404). Check the workspace slug ${named}; \`vatio whoami\` lists the workspaces this machine reaches.`
-        : "Remote resource not found (404). Check the workspace slug; `vatio push` creates a missing remote automatically."
-    );
-    return printTrailer(error);
-  }
-  if (error instanceof HttpError) {
-    console.error(error.message);
-    return printTrailer(error);
-  }
-  // Anything left is a bug in this CLI rather than something the developer
-  // did, so it keeps its stack: that is what makes it reportable.
-  console.error(error?.stack ?? String(error));
-  suggestFeedback();
-}
-
-// What the platform said to do next, and the ids that find this request in
-// its logs.
-function printTrailer(error) {
-  const hint = error.body?.hint;
-  if (hint && !(error instanceof UnauthorizedError)) console.error(`Next: ${hint}`);
-
-  const code = error.body?.error_key ?? (typeof error.body?.error === "string" ? error.body.error : error.body?.error?.code);
-  const ids = [code && `error=${code}`, error.requestId && `request_id=${error.requestId}`].filter(Boolean);
-  if (ids.length > 0) console.error(ids.join(" "));
-  suggestFeedback();
-}
-
-// Said to coding agents only: a person at a terminal has better ways to
-// complain, and does not need the line on every typo.
-function suggestFeedback() {
-  if (!telemetryEnabled() || !isCodingAgent() || ["feedback", "share-session"].includes(invoked)) return;
-  console.error(
-    '\nIf this has you stuck, tell the Vatio team: vatio feedback "what you were trying to do and what got in the way"'
-  );
-}
+Your agent is already in Vatio: nothing to move, and vatio.yml is no longer read.
+Docs: https://vatio.ai/docs/mcp`);
+process.exit(command === undefined || command === "help" || command === "--help" || command === "-h" ? 0 : 1);
